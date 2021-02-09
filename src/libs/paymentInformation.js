@@ -4,39 +4,39 @@ const paymentInformation = [
     pays: [
       {
         interval: ["00:01", "09:00"],
-        pay: 25,
+        pay: 25
       },
       {
         interval: ["09:01", "18:00"],
-        pay: 15,
+        pay: 15
       },
       {
         interval: ["18:01", "00:00"],
-        pay: 20,
-      },
-    ],
+        pay: 20
+      }
+    ]
   },
   {
     daysRange: ["SA", "SU"],
     pays: [
       {
         interval: ["00:01", "09:00"],
-        pay: 30,
+        pay: 30
       },
       {
         interval: ["09:01", "18:00"],
-        pay: 20,
+        pay: 20
       },
       {
         interval: ["18:01", "00:00"],
-        pay: 25,
-      },
-    ],
-  },
+        pay: 25
+      }
+    ]
+  }
 ];
 
 const regExpDayTime = RegExp(
-  "[A-Z]{2}[0-9]{2}:[0-9]{2}-[0-9]{2}:[0-9]{2}",
+  "(MO|TU|WE|TH|FR|SA|SU)[0-9]{2}:[0-9]{2}-[0-9]{2}:[0-9]{2}",
   "ig"
 );
 
