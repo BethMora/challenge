@@ -148,6 +148,12 @@ export default {
   },
 
   methods: {
+  /**
+   * @description Notify in the UI to user that el archivo no es de extension .txt
+   *              or if it is a .txt file.- Present in view: the file uploaded of employees with their respective payment
+   * @param {Object} e Receives from the change event of the input, the reading of the content of the .txt file
+   * @return false to flagFileLoaded status flag when file is not extension .txt
+   */
     processData(e) {
       if (e === false) {
         return (this.flagFileLoaded = e);
@@ -160,9 +166,11 @@ export default {
         this.loadingTable = false;
       }
     },
+
     /**
      * @description Load file line by line, no spaces with employee data
-     * @return array containing the lines read from the file employees.txt
+     * @param {Object} fileData Contains the complete reading of the content of the .txt file
+     * @return array containing the lines read with no spaces from the file .txt
      */
     loadFileTxt(fileData) {
       this.resetData();
@@ -183,9 +191,13 @@ export default {
         console.error(`Sorry, the file could not be read ` + error);
         alert(`Sorry, the file could not be read ` + error);
       }
-
       return arrayWithoutSpaces;
     },
+
+    /**
+     * @description For each file load of the file event, the data component values are reset
+     * @return nothing, but reset the array of employees and the total payment to employees
+     */
     resetData() {
       this.addTotalPaymentsEmployees = 0;
       this.employeesLoades = [];
@@ -194,8 +206,8 @@ export default {
     /**
      * @description Captures the name of the employee with their respective valid: entry time and exit time records
      * @param {Array} dataFile Contains all data of employees
-     * @see regExpDayTime ER that captures the day and time of entry and exit
-     * @return It does not return, but it assigns to the component data: 'employeesLoades', 'employeeLengthArrayy'
+     * @see regExpDayTime ER that captures valid the day and time of entry and exit
+     * @return nothing, but it assigns to the component data: 'employeesLoades', 'employeeLengthArray'
      */
     sortAndGenerateData(dataFile) {
       let readLine = "";
@@ -223,10 +235,10 @@ export default {
     },
 
     /**
-     * @description Calculate the payment for the number of hours you work, according to the day and time of entry and exit
+     * @description Calculate the payment for the hours you work, according to the day and time of entry and exit
      * @see calculateTotalHoursWorked Return the number of hours, minutes and seconds jobs
-     * @see calculatePayRange Return a number that indicates the payment in dollars according to the time of entry and exit
-     * @return It does not return, but assigns to the data 'employeesLoades' from the component, the hours worked with their pay
+     * @see calculatePayRange Return a number that indicates the payment according to the time of entry and exit
+     * @return nothing, but assigns to the component data 'employeesLoades', the hours worked with their pay
      */
     assignTotalHoursAndPay() {
       this.employeesLoades.forEach((e) => {
@@ -257,7 +269,8 @@ export default {
 
     /**
      * @description Calculate the total pay for the hours worked by an employee and calculate the total pay of the employees
-     * @return It does not return, but registers to each employeesLoades the value of their total pay and assigns in the component data the total value to pay of the employees
+     * @return nothing, but registers to each employeesLoades the value of their total pay and assigns in the component data 
+     *          the total value to pay of the employees
      */
     calculateSubtotalAndTotalPayment() {
       let totalAddition = 0;
