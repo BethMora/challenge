@@ -1,16 +1,28 @@
 <template>
-  <div class="my-4" style="height:530px">
-    <div v-if="!error" class="error">
-      <v-alert dense outlined type="error" class="white--text">
+  <div style="height:530px">
+    <FileReader @processData="processData" />
+    <div v-if="!error || !flagFileLoaded">
+      <v-alert dense outlined type="warning" class="white--text">
         <strong> Sorry </strong> there are no employees to show.
         <p>
           The employees file is empty or does not have with the correct entry
           and exit time format
         </p>
       </v-alert>
+
+      <v-alert
+        v-if="!this.flagFileLoaded"
+        dense
+        outlined
+        type="error"
+        class="white--text"
+      >
+        <strong> Sorry </strong> The file must be of type text (.txt)
+      </v-alert>
     </div>
+
     <div v-else>
-      <v-simple-table v-if="!loadingTable" fixed-header height="530px">
+      <v-simple-table v-if="!loadingTable" fixed-header height="510px">
         <template>
           <thead>
             <tr>
@@ -89,67 +101,77 @@
           </tbody>
         </template>
       </v-simple-table>
-      <v-progress-circular v-else :size="50" color="primary" indeterminate>
-        Loading data
-      </v-progress-circular>
     </div>
+    <v-progress-circular
+      v-if="loadingTable"
+      :size="50"
+      color="primary"
+      indeterminate
+    >
+      Loading data
+    </v-progress-circular>
   </div>
 </template>
 
 <script>
+import FileReader from "./FileReader";
 import { paymentInformation, regExpDayTime } from "../libs/paymentInformation";
 import {
   calculatePayRange,
-  calculateTotalHoursWorked
+  calculateTotalHoursWorked,
 } from "../libs/calculationUtils";
 
 export default {
   name: "EmployeeDataTable",
+  components: { FileReader },
   data() {
     return {
       pay: paymentInformation,
       employeesLoades: [],
       regExpDayTime: regExpDayTime,
       addTotalPaymentsEmployees: 0,
-      loadingTable: true,
-      employeeLengthArray: 0
+      loadingTable: false,
+      employeeLengthArray: 0,
+      dataFile: "",
+      flagFileLoaded: true,
     };
   },
 
-  async created() {
-    try {
-      const dataFile = await this.loadFileTxt();
-      this.sortAndGenerateData(dataFile);
-      this.assignTotalHoursAndPay();
-      this.calculateSubtotalAndTotalPayment();
-      this.loadingTable = false;
-    } catch (error) {
-      console.error("The following error has occurred  " + error);
-      alert("The following error has occurred  " + error);
-    }
-  },
+  /**
+   * @description Notify in the UI to user that the file has not been uploaded or has an invalid format
+   * @return true if the employee array "employeesLoades" is null or false if it is full
+   */
   computed: {
     error() {
       return this.employeesLoades.length > 0 ? true : false;
-    }
+    },
   },
 
   methods: {
+    processData(e) {
+      if (e === false) {
+        return (this.flagFileLoaded = e);
+      } else {
+        this.flagFileLoaded = true;
+        const dataFile = this.loadFileTxt(e);
+        this.sortAndGenerateData(dataFile);
+        this.assignTotalHoursAndPay();
+        this.calculateSubtotalAndTotalPayment();
+        this.loadingTable = false;
+      }
+    },
     /**
-     * @description Load file with data of employees
-     * @param {Array} dataFile This param contains all data
-     * @param {Array} anotherParam bla bla bla
+     * @description Load file line by line, no spaces with employee data
+     * @return array containing the lines read from the file employees.txt
      */
-    async loadFileTxt() {
+    loadFileTxt(fileData) {
+      this.resetData();
       const arrayWithoutSpaces = [];
       try {
-        const data = await fetch("employees.txt");
-        const answer = await data.text();
-
         const arrayLineByLine = [];
-        arrayLineByLine.push(answer.split("\n"));
+        arrayLineByLine.push(fileData.split("\n"));
 
-        arrayLineByLine.forEach(e => {
+        arrayLineByLine.forEach((e) => {
           for (const iterator of e) {
             let noSpaces = iterator.replace(/ /g, "");
             if (noSpaces.length >= 15) {
@@ -164,10 +186,20 @@ export default {
 
       return arrayWithoutSpaces;
     },
+    resetData() {
+      this.addTotalPaymentsEmployees = 0;
+      this.employeesLoades = [];
+    },
 
+    /**
+     * @description Captures the name of the employee with their respective valid: entry time and exit time records
+     * @param {Array} dataFile Contains all data of employees
+     * @see regExpDayTime ER that captures the day and time of entry and exit
+     * @return It does not return, but it assigns to the component data: 'employeesLoades', 'employeeLengthArrayy'
+     */
     sortAndGenerateData(dataFile) {
       let readLine = "";
-      dataFile.forEach(e => {
+      dataFile.forEach((e) => {
         const longName = e.indexOf("=");
         const name = e.substring(0, longName);
         readLine = e.slice(longName + 1);
@@ -175,13 +207,13 @@ export default {
         if (daysRead != null) {
           const objEmployee = {
             name: name,
-            records: []
+            records: [],
           };
           for (const iterator of daysRead) {
             objEmployee.records.push({
               startingTime: iterator.substring(2, 7),
               finishingTime: iterator.substring(8),
-              day: iterator.substring(0, 2)
+              day: iterator.substring(0, 2),
             });
           }
           this.employeesLoades.push(objEmployee);
@@ -190,9 +222,15 @@ export default {
       this.employeeLengthArray = this.employeesLoades.length;
     },
 
+    /**
+     * @description Calculate the payment for the number of hours you work, according to the day and time of entry and exit
+     * @see calculateTotalHoursWorked Return the number of hours, minutes and seconds jobs
+     * @see calculatePayRange Return a number that indicates the payment in dollars according to the time of entry and exit
+     * @return It does not return, but assigns to the data 'employeesLoades' from the component, the hours worked with their pay
+     */
     assignTotalHoursAndPay() {
-      this.employeesLoades.forEach(e => {
-        e.records.forEach(reg => {
+      this.employeesLoades.forEach((e) => {
+        e.records.forEach((reg) => {
           const startingTime = reg.startingTime;
           const finishTime = reg.finishingTime;
           const day = reg.day;
@@ -204,7 +242,7 @@ export default {
           reg.payHourWorked = {
             payHourWorked: hoursWorked.hour,
             payMinWorked: hoursWorked.minutes,
-            paySecWorked: hoursWorked.seconds
+            paySecWorked: hoursWorked.seconds,
           };
           const payRange = calculatePayRange(
             startingTime,
@@ -216,10 +254,15 @@ export default {
         });
       });
     },
+
+    /**
+     * @description Calculate the total pay for the hours worked by an employee and calculate the total pay of the employees
+     * @return It does not return, but registers to each employeesLoades the value of their total pay and assigns in the component data the total value to pay of the employees
+     */
     calculateSubtotalAndTotalPayment() {
       let totalAddition = 0;
       let recorderCounter;
-      this.employeesLoades.forEach(e => {
+      this.employeesLoades.forEach((e) => {
         let additionRecords = 0;
         recorderCounter = e.records.length;
         e.records.forEach((reg, counter) => {
@@ -241,7 +284,7 @@ export default {
           }
         });
       });
-    }
-  }
+    },
+  },
 };
 </script>

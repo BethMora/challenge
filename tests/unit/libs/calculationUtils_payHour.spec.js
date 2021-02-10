@@ -1,7 +1,7 @@
 import {
   returnIndexDayRange,
   returnIndexIntervalAccordingToRange,
-  calculatePayRange,
+  calculatePayRange
 } from "@/libs/calculationUtils";
 import { paymentInformation } from "@/libs/paymentInformation";
 

@@ -12,6 +12,6 @@
 <script>
 export default {
   name: "Subheader",
-  props: ["subtitle"],
+  props: ["subtitle"]
 };
 </script>
