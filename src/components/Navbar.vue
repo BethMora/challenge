@@ -3,7 +3,9 @@
     <v-icon large color="deep-purple lighten-5" class="ml-6" name="icoCompany">
       mdi-domain
     </v-icon>
-    <v-toolbar-title class="ml-6 text-uppercase">{{ title }}</v-toolbar-title>
+    <v-toolbar-title class="ml-6 text-uppercase">
+      <span> {{ title }}</span>
+    </v-toolbar-title>
     <v-spacer />
 
     <v-icon large name="icoClock">

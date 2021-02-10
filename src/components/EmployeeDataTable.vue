@@ -118,7 +118,7 @@ import FileReader from "./FileReader";
 import { paymentInformation, regExpDayTime } from "../libs/paymentInformation";
 import {
   calculatePayRange,
-  calculateTotalHoursWorked,
+  calculateTotalHoursWorked
 } from "../libs/calculationUtils";
 
 export default {
@@ -133,7 +133,7 @@ export default {
       loadingTable: false,
       employeeLengthArray: 0,
       dataFile: "",
-      flagFileLoaded: true,
+      flagFileLoaded: true
     };
   },
 
@@ -144,16 +144,16 @@ export default {
   computed: {
     error() {
       return this.employeesLoades.length > 0 ? true : false;
-    },
+    }
   },
 
   methods: {
-  /**
-   * @description Notify in the UI to user that el archivo no es de extension .txt
-   *              or if it is a .txt file.- Present in view: the file uploaded of employees with their respective payment
-   * @param {Object} e Receives from the change event of the input, the reading of the content of the .txt file
-   * @return false to flagFileLoaded status flag when file is not extension .txt
-   */
+    /**
+     * @description Notify in the UI to user that el archivo no es de extension .txt
+     *              or if it is a .txt file.- Present in view: the file uploaded of employees with their respective payment
+     * @param {Object} e Receives from the change event of the input, the reading of the content of the .txt file
+     * @return false to flagFileLoaded status flag when file is not extension .txt
+     */
     processData(e) {
       if (e === false) {
         return (this.flagFileLoaded = e);
@@ -179,7 +179,7 @@ export default {
         const arrayLineByLine = [];
         arrayLineByLine.push(fileData.split("\n"));
 
-        arrayLineByLine.forEach((e) => {
+        arrayLineByLine.forEach(e => {
           for (const iterator of e) {
             let noSpaces = iterator.replace(/ /g, "");
             if (noSpaces.length >= 15) {
@@ -211,7 +211,7 @@ export default {
      */
     sortAndGenerateData(dataFile) {
       let readLine = "";
-      dataFile.forEach((e) => {
+      dataFile.forEach(e => {
         const longName = e.indexOf("=");
         const name = e.substring(0, longName);
         readLine = e.slice(longName + 1);
@@ -219,13 +219,13 @@ export default {
         if (daysRead != null) {
           const objEmployee = {
             name: name,
-            records: [],
+            records: []
           };
           for (const iterator of daysRead) {
             objEmployee.records.push({
               startingTime: iterator.substring(2, 7),
               finishingTime: iterator.substring(8),
-              day: iterator.substring(0, 2),
+              day: iterator.substring(0, 2)
             });
           }
           this.employeesLoades.push(objEmployee);
@@ -241,8 +241,8 @@ export default {
      * @return nothing, but assigns to the component data 'employeesLoades', the hours worked with their pay
      */
     assignTotalHoursAndPay() {
-      this.employeesLoades.forEach((e) => {
-        e.records.forEach((reg) => {
+      this.employeesLoades.forEach(e => {
+        e.records.forEach(reg => {
           const startingTime = reg.startingTime;
           const finishTime = reg.finishingTime;
           const day = reg.day;
@@ -254,7 +254,7 @@ export default {
           reg.payHourWorked = {
             payHourWorked: hoursWorked.hour,
             payMinWorked: hoursWorked.minutes,
-            paySecWorked: hoursWorked.seconds,
+            paySecWorked: hoursWorked.seconds
           };
           const payRange = calculatePayRange(
             startingTime,
@@ -269,13 +269,13 @@ export default {
 
     /**
      * @description Calculate the total pay for the hours worked by an employee and calculate the total pay of the employees
-     * @return nothing, but registers to each employeesLoades the value of their total pay and assigns in the component data 
+     * @return nothing, but registers to each employeesLoades the value of their total pay and assigns in the component data
      *          the total value to pay of the employees
      */
     calculateSubtotalAndTotalPayment() {
       let totalAddition = 0;
       let recorderCounter;
-      this.employeesLoades.forEach((e) => {
+      this.employeesLoades.forEach(e => {
         let additionRecords = 0;
         recorderCounter = e.records.length;
         e.records.forEach((reg, counter) => {
@@ -297,7 +297,7 @@ export default {
           }
         });
       });
-    },
-  },
+    }
+  }
 };
 </script>

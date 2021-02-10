@@ -7,7 +7,7 @@
       <EmployeeDataTable />
     </v-container>
 
-    <Footer />
+    <Footer :date="date" />
   </div>
 </template>
 
@@ -24,7 +24,8 @@ export default {
     return {
       title: "'N' company employees",
       subtitle: "Hours and payments to employees",
+      date: new Date().getFullYear() + " "
     };
-  },
+  }
 };
 </script>

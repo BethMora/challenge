@@ -20,7 +20,7 @@ function hourMinStartingFinishing(starting, finishing) {
     startTime: hourStarting,
     minStart: minStarting,
     finTime: hourFinishing,
-    minFin: minFinishing,
+    minFin: minFinishing
   };
   return objStartingFinishing;
 }
@@ -34,7 +34,7 @@ function secondsToHours(seconds) {
   let objHoursWorked = {
     hour: "00",
     minutes: "00",
-    seconds: "00",
+    seconds: "00"
   };
   if (seconds > 0) {
     let hour = Math.floor(seconds / 3600);
@@ -46,7 +46,7 @@ function secondsToHours(seconds) {
     objHoursWorked = {
       hour: hour,
       minutes: minute,
-      seconds: second,
+      seconds: second
     };
   }
   return objHoursWorked;

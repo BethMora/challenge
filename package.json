@@ -2,12 +2,9 @@
   "name": "challenge-ioet",
   "version": "0.1.0",
   "private": true,
-  
   "husky": {
     "hooks": {
-      "pre-commit": "npm test",
-      "pre-push": "npm test",
-      "...": "..."
+      "pre-commit": "npm run lint && npm test"
     }
   },
   "scripts": {
@@ -36,6 +33,7 @@
     "prettier": "^1.19.1",
     "sass": "^1.32.0",
     "sass-loader": "^10.0.0",
+    "sinon": "^9.2.4",
     "vue-cli-plugin-vuetify": "~2.1.0",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.7.0"

@@ -4,7 +4,7 @@
       mdi-format-list-text
     </v-icon>
     <h3 class="ml-3  text-uppercase purple--text">
-      {{ subtitle }}
+      <span> {{ subtitle }} </span>
     </h3>
   </v-subheader>
 </template>
